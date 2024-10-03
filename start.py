@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
-        Dialog.setObjectName("Face Recognizer")
+        Dialog.setObjectName("m_dlgStart")
         Dialog.resize(800, 600)
         Dialog.setMinimumSize(QtCore.QSize(800, 600))
         self.horizontalLayout = QtWidgets.QHBoxLayout(Dialog)
@@ -99,7 +99,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Face Recognizer"))
         self.m_lbCameraView.setText(_translate("Dialog", "Please select database directory and press start button"))
         self.m_btnFileOpen.setText(_translate("Dialog", "Select"))
         self.m_btnCameraStart.setText(_translate("Dialog", "Camera Open"))
