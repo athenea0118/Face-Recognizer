@@ -46,7 +46,3 @@ def detect_faces_from_stream(ip_camera_url):
 
 def verify_face(frame, base_image):
     return
-
-# Replace with your actual IP camera stream URL
-ip_camera_url = "http://<username>:<password>@<ip_address>:<port>/video"
-detect_faces_from_stream(ip_camera_url)
