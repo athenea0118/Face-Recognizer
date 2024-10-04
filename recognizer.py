@@ -2,15 +2,17 @@ from deepface import DeepFace
 import cv2
 import matplotlib.pyplot as plt
 
+DeepFace.build_model("Facenet512")
+frame = None
+
 # Function to process the video stream and detect faces
-def detect_faces_from_stream(ip_camera_url):
-    DeepFace.build_model("Facenet512")
+def openCamera(parent, ip_camera_url):
     # Capture video from the IP camera
     video_stream = cv2.VideoCapture(0)
 
     if not video_stream.isOpened():
         print("Error: Unable to open video stream")
-        return
+        return 
 
     while True:
         # Capture frame-by-frame
