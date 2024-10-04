@@ -10,10 +10,11 @@
 
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 import recognizer as rg
 
 app = QtWidgets.QApplication(sys.argv)
+file = None
 
 class FaceRecognizerDlg(object):
     def setupUi(self, Dialog):
@@ -116,10 +117,18 @@ class FaceRecognizerDlg(object):
         self.m_btnExit.setText(_translate("Dialog", "Exit"))
 
     def onSelectDirectory(self):
-        print("Please select directory")
-        # QMessageBox.information(self, "Database", "Please select directory")
+        options = QFileDialog.Options()
+        file, _ = QFileDialog.getOpenFileName(None, "Select File", "", "All Files (*);;Database Files (*.jpg)", options=options)
+        
+        # Display the selected file path
+        if file:
+            QMessageBox.information(None, "Database", f"Selected File: {file}")
+
+        else:
+            QMessageBox.information(None, "Database", "Please select directory")
 
     def onCameraStart(self):
+        print(file)
         # Replace with your actual IP camera stream URL
         ip_camera_url = "http://<username>:<password>@<ip_address>:<port>/video"
         rg.detect_faces_from_stream(ip_camera_url)
