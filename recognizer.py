@@ -1,6 +1,8 @@
 from deepface import DeepFace
 import cv2
 import matplotlib.pyplot as plt
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtCore import Qt
 
 DeepFace.build_model("Facenet512")
 frame = None
@@ -31,9 +33,21 @@ def openCamera(parent, ip_camera_url):
             for face in result:
                 x, y, w, h = face['facial_area']['x'], face['facial_area']['y'], face['facial_area']['w'], face['facial_area']['h']
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            
+
+                height, width, channel = frame.shape
+                bytes_per_line = channel * width
+                
+                if channel is 3:
+                    q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_BGR888)
+                else:
+                    q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_BGR8888)
+
+                # Set up QLabel to display the image
+                parent.m_lbCameraView.setPixmap(QPixmap.fromImage(q_img))
+                parent.m_lbCameraView.setAlignment(Qt.AlignCenter)
+
             # Display the frame with detected faces
-            cv2.imshow('IP Camera Face Detection', frame)
+            # cv2.imshow('IP Camera Face Detection', frame)
 
         except Exception as e:
             print("Error during face detection:", e)
