@@ -127,7 +127,7 @@ class FaceRecognizerDlg(object):
             QMessageBox.information(None, "Database", f"Selected File: {self.file}")
 
         else:
-            QMessageBox.information(None, "Database", "Please select directory")
+            QMessageBox.warning(None, "Database", "Please select directory")
 
     def onCameraStart(self):
         # Replace with your actual IP camera stream URL

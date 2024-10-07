@@ -2,10 +2,11 @@ from deepface import DeepFace
 import cv2
 import matplotlib.pyplot as plt
 from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
 
 DeepFace.build_model("Facenet512")
-frame = None
+base_frame = None
 
 # Function to process the video stream and detect faces
 def openCamera(parent, ip_camera_url):
@@ -13,7 +14,7 @@ def openCamera(parent, ip_camera_url):
     video_stream = cv2.VideoCapture(0)
 
     if not video_stream.isOpened():
-        print("Error: Unable to open video stream")
+        QMessageBox.critical(None, "Recognizer", "Error: Unable to open video stream")
         return 
 
     while True:
@@ -21,13 +22,13 @@ def openCamera(parent, ip_camera_url):
         ret, frame = video_stream.read()
 
         if not ret:
-            print("Failed to grab frame")
+            QMessageBox.critical(None, "Recognizer", "Failed to grab frame")
             break
 
         # Use DeepFace to detect faces in the frame
         try:
             # Detect face using DeepFace's Face detector
-            result = DeepFace.extract_faces(frame, detector_backend='opencv', enforce_detection=False)
+            result = DeepFace.extract_faces(frame, detector_backend='yolov8', enforce_detection=False)
             
             # Draw a rectangle around detected faces
             for face in result:
@@ -37,7 +38,7 @@ def openCamera(parent, ip_camera_url):
                 height, width, channel = frame.shape
                 bytes_per_line = channel * width
                 
-                if channel is 3:
+                if channel == 3:
                     q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_BGR888)
                 else:
                     q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_BGR8888)
@@ -50,7 +51,8 @@ def openCamera(parent, ip_camera_url):
             # cv2.imshow('IP Camera Face Detection', frame)
 
         except Exception as e:
-            print("Error during face detection:", e)
+            print("Error during face detection: ", e)
+            # QMessageBox.critical(None, "Recognizer", "Error during face detection: " . e)
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -60,5 +62,12 @@ def openCamera(parent, ip_camera_url):
     video_stream.release()
     cv2.destroyAllWindows()
 
-def verify_face(frame, base_image):
+def verify_face(parent, file):
+    # base_img = cv2.imread(file)
+    # obj = DeepFace.verify(frame, img2_path = file, model_name = "Facenet512", detector_backend = "yolov8")
+    # print(obj)
+    # plt.imshow(frame)
+    print(frame)
+
+
     return
