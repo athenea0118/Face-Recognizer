@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
 
 DeepFace.build_model("Facenet512")
-base_frame = None
+frame = None
 
 # Function to process the video stream and detect faces
 def openCamera(parent, ip_camera_url):
