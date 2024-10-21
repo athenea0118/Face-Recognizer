@@ -132,7 +132,7 @@ class FaceRecognizerDlg(object):
     def onCameraStart(self):
         # Replace with your actual IP camera stream URL
         ip_camera_url = "http://<username>:<password>@<ip_address>:<port>/video"
-        rg.openCamera(self, ip_camera_url)
+        rg.openCamera(self, 0)
     
     def onFaceVerify(self):
         rg.verify_face(self, self.file)

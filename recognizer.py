@@ -11,7 +11,7 @@ frame = None
 # Function to process the video stream and detect faces
 def openCamera(parent, ip_camera_url):
     # Capture video from the IP camera
-    video_stream = cv2.VideoCapture(0)
+    video_stream = cv2.VideoCapture(ip_camera_url)
 
     if not video_stream.isOpened():
         QMessageBox.critical(None, "Recognizer", "Error: Unable to open video stream")
@@ -51,8 +51,7 @@ def openCamera(parent, ip_camera_url):
             # cv2.imshow('IP Camera Face Detection', frame)
 
         except Exception as e:
-            print("Error during face detection: ", e)
-            # QMessageBox.critical(None, "Recognizer", "Error during face detection: " . e)
+            QMessageBox.critical(None, "Recognizer", f"Error during face detection: {str(e)}")
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -63,11 +62,22 @@ def openCamera(parent, ip_camera_url):
     cv2.destroyAllWindows()
 
 def verify_face(parent, file):
-    # base_img = cv2.imread(file)
-    # obj = DeepFace.verify(frame, img2_path = file, model_name = "Facenet512", detector_backend = "yolov8")
-    # print(obj)
-    # plt.imshow(frame)
-    print(frame)
+   # Read the verification image
+    base_img = cv2.imread(file)
+    if base_img is None:
+        QMessageBox.critical(None, "Recognizer", "Error: Unable to read the verification image")
+        return 
+
+    cv2.imshow("base_img", frame)
+    # Verify the face
+    try:
+        obj = DeepFace.verify(frame, img2_path=file, model_name="Facenet512", detector_backend="yolov8")
+        if obj['verified']:
+            QMessageBox.information(parent, "Verification", "The faces match!")
+        else:
+            QMessageBox.warning(parent, "Verification", "The faces do not match.")
+    except Exception as e:
+        QMessageBox.critical(None, "Recognizer", f"Error during face verification: {str(e)}")
 
 
     return
