@@ -11,8 +11,9 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtCore import Qt
 import recognizer as rg
-import cv2
 
 app = QtWidgets.QApplication(sys.argv)
 
@@ -107,6 +108,10 @@ class FaceRecognizerDlg(object):
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
+        # self.timer = QtCore.QTimer()
+        # self.timer.timeout.connect(self.verify_face)
+        # self.frame = None
+
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Face Recognizer"))
@@ -131,14 +136,34 @@ class FaceRecognizerDlg(object):
 
     def onCameraStart(self):
         # Replace with your actual IP camera stream URL
-        ip_camera_url = "http://<username>:<password>@<ip_address>:<port>/video"
-        rg.openCamera(self, 0)
+        camera = "http://<username>:<password>@<ip_address>:<port>/video"
+        self.video_thread = rg.VideoCaptureThread(0)
+        self.video_thread.frameCaptured.connect(self.update_frame)
+        self.video_thread.start()
+        # self.timer.start(1000)  # Start the timer for verification
     
+    def update_frame(self, frame):
+        height, width, channel = frame.shape
+        bytes_per_line = channel * width
+        
+        if channel == 3:
+            q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_BGR888)
+        else:
+            q_img = QImage(frame.data, width, height, bytes_per_line, QImage.Format_BGR8888)
+
+        # Set up QLabel to display the image
+        self.m_lbCameraView.setPixmap(QPixmap.fromImage(q_img))
+        self.m_lbCameraView.setAlignment(Qt.AlignCenter)
+
+        self.frame = frame
+
     def onFaceVerify(self):
-        rg.verify_face(self, self.file)
-        return
+        if self.frame is not None and self.file is not None:
+            rg.verify_face(self.frame, self.file)
 
     def onExit(self):
+        if hasattr(self, 'video_thread'):
+            self.video_thread.stop()
         sys.exit(app.exec_())
 
 if __name__ == "__main__":
