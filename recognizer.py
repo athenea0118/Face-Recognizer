@@ -49,18 +49,15 @@ DeepFace.build_model("Facenet512")
 def verify_face(frame, file):
    # Read the verification image
     base_img = cv2.imread(file)
-    if base_img is None:
-        QMessageBox.critical(None, "Recognizer", "Error: Unable to read the verification image")
-        return 
 
-    # Verify the face
+    if base_img is None:
+        return 2    # Verify the face
+
     try:
         obj = DeepFace.verify(frame, img2_path=file, model_name="Facenet512", detector_backend="yolov8")
         if obj['verified']:
-            QMessageBox.information(None, "Verification", "The faces match!")
+            return 0
         else:
-            QMessageBox.warning(None, "Verification", "The faces do not match.")
+            return 1
     except Exception as e:
-        QMessageBox.critical(None, "Recognizer", f"Error during face verification: {str(e)}")
-
-    return
+        return e

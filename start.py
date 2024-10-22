@@ -12,7 +12,7 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QStringListModel
 import recognizer as rg
 
 app = QtWidgets.QApplication(sys.argv)
@@ -108,6 +108,18 @@ class FaceRecognizerDlg(object):
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
+        # Create a model for the list view
+        self.model = QStringListModel()
+
+        # Initialize the data in the model
+        self.data = []
+
+        # Set the data to the model
+        self.model.setStringList(self.data)
+
+        # Set the model to the QListView
+        self.m_lvResult.setModel(self.model)
+
         # self.timer = QtCore.QTimer()
         # self.timer.timeout.connect(self.verify_face)
         # self.frame = None
@@ -159,7 +171,30 @@ class FaceRecognizerDlg(object):
 
     def onFaceVerify(self):
         if self.frame is not None and self.file is not None:
-            rg.verify_face(self.frame, self.file)
+            path_list = self.file.split('/') # for windows: '/', for linux: '\\'
+            file_name = path_list[len(path_list) - 1]
+            result = rg.verify_face(self.frame, self.file)
+
+            if result == 0:
+                QMessageBox.information(None, "Verification", "The faces match!")
+                
+                # Add the new item to the data list
+                self.data.append(f"{file_name} has verified.")
+
+                # Update the model with the new data
+                self.model.setStringList(self.data)
+            elif result == 1:
+                QMessageBox.warning(None, "Verification", "The faces do not match.")
+                
+                # Add the new item to the data list
+                self.data.append(f"{file_name} has verified.")
+
+                # Update the model with the new data
+                self.model.setStringList(self.data)
+            elif result == 2:
+                QMessageBox.critical(None, "Recognizer", "Error: Unable to read the verification image")
+            else:
+                QMessageBox.critical(None, "Recognizer", f"Error during face verification: {str(result)}")
 
     def onExit(self):
         if hasattr(self, 'video_thread'):
